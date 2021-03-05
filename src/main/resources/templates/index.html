@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>病毒传播模拟</title>
+<!--    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>-->
+    <link rel="stylesheet" href="/resources/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="/resources/lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="/resources/css/public.css" media="all">
+    <style>
+        .layui-card {border:1px solid #f2f2f2;border-radius:5px;}
+        .icon {margin-right:10px;color:#1aa094;}
+        .icon-cray {color:#ffb800!important;}
+        .icon-blue {color:#1e9fff!important;}
+        .icon-red {color: #ff0000 !important;}
+        .icon-tip {color:#ff5722!important;}
+        .layuimini-qiuck-module {text-align:center;margin-top: 10px}
+        .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
+        .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
+        .welcome-module {width:100%;height:210px;}
+        .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+        .panel-body {padding:10px}
+        .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
+        .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+        .layui-red {color:red}
+        .main_btn > p {height:40px;}
+        .layui-bg-number {background-color:#F8F8F8;}
+        .layuimini-notice:hover {background:#f6f6f6;}
+        .layuimini-notice {padding:7px 16px;clear:both;font-size:12px !important;cursor:pointer;position:relative;transition:background 0.2s ease-in-out;}
+        .layuimini-notice-title,.layuimini-notice-label {
+            padding-right: 70px !important;text-overflow:ellipsis!important;overflow:hidden!important;white-space:nowrap!important;}
+        .layuimini-notice-title {line-height:28px;font-size:14px;}
+        .layuimini-notice-extra {position:absolute;top:50%;margin-top:-8px;right:16px;display:inline-block;height:16px;color:#999;}
+        #map {width:100%; height: 730px; }
+    </style>
+</head>
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">病毒传播模拟</div>
+    <div class="layui-card-body" style="width: 100%; height: 2000px">
+
+        <div class="layui-row layui-col-space10">
+            <div class="layui-col-md9">
+                <!--            <div id="map1" style="width: 100%; height: 720px"></div>-->
+                <div id="container" style="width: 100%; height: 800px" class="map" tabindex="0"></div>
+            </div>
+
+            <div class="layui-col-md3">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-credit-card icon icon"></i>统计信息</div>
+                    <div class="layui-card-body" style="height: 300px">
+                        <div class="welcome-module">
+                            <div class="layui-row layui-col-space10">
+                                <div class="layui-col-xs6">
+                                    <div class="panel layui-bg-number">
+                                        <div class="panel-body">
+                                            <div class="panel-title">
+                                                <h5>总人数</h5>
+                                            </div>
+                                            <div class="panel-content">
+                                                <h1 class="no-margins" id="people"></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs6">
+                                    <div class="panel layui-bg-number">
+                                        <div class="panel-body">
+                                            <div class="panel-title">
+                                                <h5>天数</h5>
+                                            </div>
+                                            <div class="panel-content">
+                                                <h1 class="no-margins" id="day"></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs6">
+                                    <div class="panel layui-bg-number">
+                                        <div class="panel-body">
+                                            <div class="panel-title">
+                                                <h5>健康人数</h5>
+                                            </div>
+                                            <div class="panel-content">
+                                                <h1 class="no-margins" id="normal"></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs6">
+                                    <div class="panel layui-bg-number">
+                                        <div class="panel-body">
+                                            <div class="panel-title">
+                                                <h5>潜伏期人数</h5>
+                                            </div>
+                                            <div class="panel-content">
+                                                <h1 class="no-margins" id="shadow"></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs6">
+                                    <div class="panel layui-bg-number">
+                                        <div class="panel-body">
+                                            <div class="panel-title">
+                                                <h5>发病人数</h5>
+                                            </div>
+                                            <div class="panel-content">
+                                                <h1 class="no-margins" id="confirmed"></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="layui-col-xs6">
+                                    <div class="panel layui-bg-number">
+                                        <div class="panel-body">
+                                            <div class="panel-title">
+                                                <h5>死亡人数</h5>
+                                            </div>
+                                            <div class="panel-content">
+                                                <h1 class="no-margins" id="death"></h1>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-card-header">参数设置</div>
+                <div class="layui-card-body">
+                    <form action="" method="post" id="start" lay-filter="searchForm" class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">人数</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="peopleSize" autocomplete="off" class="layui-input" value="5000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">传播率</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="boardRate" autocomplete="off" class="layui-input" value="0.8">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">医院容量</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="bedCount" autocomplete="off" class="layui-input" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">流动意愿</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="u" autocomplete="off" class="layui-input" value="0.99">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">口罩佩戴率</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="mask" autocomplete="off" class="layui-input" value="0.1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <div class="layui-btn-group">
+                                    <button type="button" class="layui-btn" lay-submit="" lay-filter="start">模拟</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-line-chart icon icon-yellow"></i>感染人数</div>
+                    <div class="layui-card-body">
+                        <div id="bodyTemp" style="width: 750px;height:400px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header"><i class="fa fa-line-chart icon icon-blue"></i>死亡人数</div>
+                    <div class="layui-card-body">
+                        <div id="heartRate" style="width: 750px;height:400px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<script type="text/javascript" src='https://a.amap.com/jsapi_demos/static/citys.js'></script>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=5b758feabc9c94f53660d37bd6eeaf6c&plugin=AMap.Adaptor"></script>
+<script src="/resources/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/resources/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script>
+    layui.use(['layer', 'miniTab','echarts','form','jquery'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            miniTab = layui.miniTab,
+            echarts = layui.echarts,
+            form=layui.form;
+
+        var mass;
+
+        miniTab.listen();
+
+        var map = new AMap.Map('container', {
+            mapStyle: 'amap://styles/whitesmoke',
+            zoom: 17,
+            center: [103.933116,30.750244],
+            showIndoorMap: false,
+            viewMode: '3D',
+
+        });
+
+        var polygon = new AMap.Polygon({
+            path: [
+                [103.923116,30.740244],
+                [103.923116,30.760244],
+                [103.943116,30.760244],
+                [103.943116,30.740244]
+            ],
+            strokeColor: "#1791fc",
+            strokeWeight: 6,
+            strokeOpacity: 0.2,
+            fillOpacity: 0.4,
+            fillColor: '#cfdae2',
+            zIndex: 50,
+        })
+
+        map.add(polygon)
+        // 缩放地图到合适的视野级别
+        map.setFitView([ polygon ])
+
+        var style = [{
+            url: 'https://webapi.amap.com/images/mass/mass0.png',
+            // anchor: new AMap.Pixel(6, 6),
+            size: new AMap.Size(5, 5),
+            zIndex: 3,
+        }, {
+            url: 'https://webapi.amap.com/images/mass/mass1.png',
+            // anchor: new AMap.Pixel(4, 4),
+            size: new AMap.Size(4, 4),
+            zIndex: 2,
+        }, {
+            url: 'https://webapi.amap.com/images/mass/mass2.png',
+            // anchor: new AMap.Pixel(3, 3),
+            size: new AMap.Size(4, 4),
+            zIndex: 1,
+        }
+        ];
+
+        // start();
+
+        function start(data){
+            // $.post("/start",{
+            $.post("/start", {
+                peopleSize : data.peopleSize,
+                boardRate : data.boardRate,
+                bedCount: data.bedCount,
+                u: data.u,
+                mask: data.mask
+            }, function(data) {
+                mass = new AMap.MassMarks(data.list, {
+                    opacity: 0.8,
+                    zIndex: 111,
+                    cursor: 'pointer',
+                    style: style
+                });
+                // var marker = new AMap.Marker({content: ' ', map: map});
+                mass.setStyle(style);
+                mass.setMap(map);
+                map.setFitView();
+
+
+                var isLoaded = false;
+                function reqs(opts) {
+                    $.ajax({
+                        type: 'get',
+                        url: '/update',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            if(opts.init === 1) {
+                            }
+                            isLoaded = false;
+                        },
+                        success: function(data) {
+
+                            document.getElementById("day").innerHTML = data.day;
+                            document.getElementById("normal").innerHTML = data.normal;
+                            document.getElementById("shadow").innerHTML = data.shadow;
+                            document.getElementById("confirmed").innerHTML = data.confirmed;
+                            document.getElementById("death").innerHTML = data.death;
+
+                            mass.clear();
+                            mass = null;
+                            mass = new AMap.MassMarks(data.list, {
+                                opacity: 0.8,
+                                zIndex: 111,
+                                cursor: 'pointer',
+                                style: style
+                            });
+                            // var marker = new AMap.Marker({content: ' ', map: map});
+                            mass.setStyle(style);
+                            mass.setMap(map);
+
+
+                        },
+                        complete: function() {
+                            if(opts.init === 1) {
+                            }
+                            isLoaded = true;
+                        },
+                        error: function() {
+                            console.log('请求失败~');
+                        }
+                    });
+                }
+                reqs({"init": 1});
+                setInterval(function() {
+                    isLoaded && reqs({"init": 0});
+                }, 1000);
+
+            });
+            return false;
+
+
+        }
+
+
+
+        //模糊查询
+        form.on("submit(start)",function(data){
+
+            document.getElementById("people").innerHTML = data.field.peopleSize;
+            start(data.field);
+        });
+
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+#配置数据源的属性
+spring:
+
+  #thymeleaf的配置
+  thymeleaf:
+    cache: false
+    enabled: true
+
+server:
+  port: 8080
